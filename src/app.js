@@ -72,15 +72,17 @@ app.delete("/user",async(req,res)=>{
   const userId = req.body.userId;
   try{
     const users = await User.findById(userId);
-    if(!users){
-      res.status(404).json({
-        message : "user is not found"
-      });
-    }
+
+    // if(!users){
+    //   res.status(404).json({
+    //     message : "user is not found"
+    //   });
+
     await User.findByIdAndDelete(userId)
     res.status(200).json({
       message : "user deleted succesfully"
     });
+
   }catch(err){
     res.status(400).json({
       message : "something went wrong"
@@ -94,15 +96,22 @@ app.patch("/user",async(req,res)=>{
   const data = req.body.user; 
   try{
    const cheackuser = await User.findById(userId);
+
     if(!cheackuser){
       res.status(404).json({
         message : "user is not found"
       });
     }
-    await User.findByIdAndUpdate(userId,data)
+
+    await User.findByIdAndUpdate(userId,data,{
+      returnDocument : "after",
+      runValidators : true
+    })
+
     res.status(200).json({
       message : "updated successfully"
     }) 
+
   }catch(err){
     res.status(400).json({
       message : "something went wrong"
