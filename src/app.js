@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const connectDB = require("./config/database");
-const User = require ("./model/user.js");
+const User = require ("./model/user.model.js");
 const { message } = require("statuses");
 const PORT = process.env.PORT || 3000;
 
@@ -23,7 +23,7 @@ app.post("/singup",async (req,res) =>{
     res.send("user added successfully ");
   }catch(err){
     res.status(400).json({
-      message : "something went wrong"
+      message : err.message
     });
   }
 });
@@ -35,15 +35,13 @@ app.get("/user",async(req,res)=>{
   try {
     const user = await User.findOne({emailID : userEmail});
     if(!user){
-      res.status(404).json({
-        message : "user is not found"
-      });
+      throw new Error("user is not found")
     }else{
       res.status(200).json(user);
     }
   }catch(err){
     res.status(400).json({
-      message : "something went wrong"
+      message : err.message
     });
   }
 });
@@ -54,9 +52,7 @@ app.get("/feed",async(req,res)=>{
   try{
     const user = await User.find({});
     if(user.length === 0){
-      req.status(404).json({
-        message : "no user found"
-      });
+      throw new Error("No data found")
     }else{
       res.status(200).json(user);
     }
@@ -91,7 +87,7 @@ app.delete("/user",async(req,res)=>{
 });
 
 
-app.patch("/user",async(req,res)=>{
+app.patch("/user-data",async(req,res)=>{
   const userId = req.body.userId;
   const data = req.body.user; 
   try{
