@@ -37,16 +37,16 @@ app.get("/user",async(req,res)=>{
     if(!user){
       res.status(404).json({
         message : "user is not found"
-      })
+      });
     }else{
       res.status(200).json(user);
     }
   }catch(err){
     res.status(400).json({
       message : "something went wrong"
-    })
+    });
   }
-})
+});
 
 
 app.get("/feed",async(req,res)=>{
@@ -58,23 +58,68 @@ app.get("/feed",async(req,res)=>{
         message : "no user found"
       });
     }else{
-      res.status(200).json(user)
+      res.status(200).json(user);
     }
   }catch(err){
     res.status(400).json({
       message : "something went wrong"
     });
   }
+});
+
+
+app.delete("/user",async(req,res)=>{
+  const userId = req.body.userId;
+  try{
+    const users = await User.findById(userId);
+    if(!users){
+      res.status(404).json({
+        message : "user is not found"
+      });
+    }
+    await User.findByIdAndDelete(userId)
+    res.status(200).json({
+      message : "user deleted succesfully"
+    });
+  }catch(err){
+    res.status(400).json({
+      message : "something went wrong"
+    });
+  } 
+});
+
+
+app.patch("/user",async(req,res)=>{
+  const userId = req.body.userId;
+  const data = req.body.user; 
+  try{
+   const cheackuser = await User.findById(userId);
+    if(!cheackuser){
+      res.status(404).json({
+        message : "user is not found"
+      });
+    }
+    await User.findByIdAndUpdate(userId,data)
+    res.status(200).json({
+      message : "updated successfully"
+    }) 
+  }catch(err){
+    res.status(400).json({
+      message : "something went wrong"
+    })
+  }
 })
+
+
 
 
 connectDB()
   .then(()=>{
      app.listen(PORT,() =>{
-      console.log(`server is sucssesfully listen to the port ${PORT}`)
-    })
+      console.log(`server is sucssesfully listen to the port ${PORT}`);
+    });
   })
   .catch((err)=>{
-    console.error("error fuck!!!")
-  })
+    console.error("error can not connected to DB!!!");
+  });
 
