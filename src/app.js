@@ -6,11 +6,14 @@ const User = require ("./model/user.model.js");
 const { message } = require("statuses");
 const isvalidator = require("./utils/validator.js")
 const bcrypt = require("bcrypt")
+const cookieisparser = require("cookie-parser") 
+const jwt = require("jsonwebtoken")
 const PORT = process.env.PORT || 3000;
 
 
 
 app.use(express.json())
+app.use(cookieisparser())
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError) {
     return res.status(400).json({ error: "Invalid JSON" });
@@ -44,18 +47,19 @@ app.post("/singup",async (req,res) =>{
 app.post("/login",async(req,res)=>{
   try{
     const {emailID,password} = req.body
-    const user = await User.findOne(emailID)
+    const user = await User.findOne({emailID})
     if(!user){
       throw new Error("not valie emailid")
     }
-    const ispasswordvalid = await bcrypt.compare(password,user.password)
+    const ispasswordvalid = bcrypt.compare(password,user.password)
     if(!ispasswordvalid){
       throw new Error("enter the correct password")
-    }else{
-      res.status(200).json({
-        message : "login succesfully"
-      })
     }
+    const token = jwt.sign({ _id: user._id }, "Dev@tinder") 
+    
+    res.cookie("token",token).status(200).json({
+      message : "login succesfully"
+    })
   }catch(err){
     res.status(400).json({
       message : err.message
@@ -67,11 +71,14 @@ app.post("/login",async(req,res)=>{
 app.get("/user",async(req,res)=>{
   const userEmail = req.body.emailID;
   try {
+    const {token} = req.cookies
     const user = await User.findOne({emailID : userEmail});
     if(!user){
       throw new Error("user is not found")
     }else{
-      res.status(200).json(user);
+      res.status(200).json({
+        message : "user found succesfully"
+      });
     }
   }catch(err){
     res.status(400).json({
@@ -122,7 +129,7 @@ app.delete("/user",async(req,res)=>{
 
 
 app.patch("/user-data/:userID",async(req,res)=>{
-  const userId = req.params?.userId;
+  const userId = req.params?.userID;
   const data = req.body; 
   try{
     
