@@ -8,6 +8,7 @@ const isvalidator = require("./utils/validator.js")
 const bcrypt = require("bcrypt")
 const cookieisparser = require("cookie-parser") 
 const jwt = require("jsonwebtoken")
+const { userAuth } = require("./middleware/auth.js")
 const PORT = process.env.PORT || 3000;
 
 
@@ -55,7 +56,7 @@ app.post("/login",async(req,res)=>{
     if(!ispasswordvalid){
       throw new Error("enter the correct password")
     }
-    const token = jwt.sign({ _id: user._id }, "Dev@tinder") 
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET) 
     
     res.cookie("token",token).status(200).json({
       message : "login succesfully"
@@ -66,9 +67,18 @@ app.post("/login",async(req,res)=>{
     })
   }
 })
+app.get("/profile",userAuth,async (req,res)=>{
+  try{
+    const user = await User.findById(_id)
+    res.status(200).json(user)
+  }catch(err){
+    res.status(400).json({
+      message : err.message
+    })
+  }
+})
 
-
-app.get("/user",async(req,res)=>{
+app.get("/user",userAuth,async(req,res)=>{
   const userEmail = req.body.emailID;
   try {
     const {token} = req.cookies
@@ -88,8 +98,7 @@ app.get("/user",async(req,res)=>{
 });
 
 
-app.get("/feed",async(req,res)=>{
-  const userEmail = req.body.emailID;
+app.get("/feed",userAuth,async(req,res)=>{
   try{
     const user = await User.find({});
     if(user.length === 0){
@@ -105,16 +114,10 @@ app.get("/feed",async(req,res)=>{
 });
 
 
-app.delete("/user",async(req,res)=>{
+app.delete("/user",userAuth,async(req,res)=>{
   const userId = req.body.userId;
   try{
     const users = await User.findById(userId);
-
-    // if(!users){
-    //   res.status(404).json({
-    //     message : "user is not found"
-    //   });
-
     await User.findByIdAndDelete(userId)
     res.status(200).json({
       message : "user deleted succesfully"
@@ -128,7 +131,7 @@ app.delete("/user",async(req,res)=>{
 });
 
 
-app.patch("/user-data/:userID",async(req,res)=>{
+app.patch("/user-data/:userID",userAuth,async(req,res)=>{
   const userId = req.params?.userID;
   const data = req.body; 
   try{
