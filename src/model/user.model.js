@@ -53,6 +53,23 @@ const userSchema = new mogoose.Schema({
     timestamps : true
 })
 
+
+userSchema.method.getjwt = function (){
+    const user = this
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET,{
+      expiresIn : "7d",
+    }) 
+    return token 
+}
+
+
+userSchema.method.decriptpassword = function (passwordinputbyuser){
+    const user = this
+    const hashpassword = user.password
+    const ispasswordvalid = bcrypt.compare(passwordinputbyuser,hashpassword)
+    return ispasswordvalid
+}
+
 module.exports = mogoose.model("user",userSchema) 
 
 
