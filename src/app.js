@@ -56,8 +56,7 @@ app.post("/login",async(req,res)=>{
     if(!ispasswordvalid){
       throw new Error("enter the correct password")
     }
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET) 
-    
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET)  
     res.cookie("token",token).status(200).json({
       message : "login succesfully"
     })
@@ -67,6 +66,9 @@ app.post("/login",async(req,res)=>{
     })
   }
 })
+
+
+
 app.get("/profile",userAuth,async (req,res)=>{
   try{
     const user = await User.findById(_id)
@@ -77,98 +79,6 @@ app.get("/profile",userAuth,async (req,res)=>{
     })
   }
 })
-
-app.get("/user",userAuth,async(req,res)=>{
-  const userEmail = req.body.emailID;
-  try {
-    const {token} = req.cookies
-    const user = await User.findOne({emailID : userEmail});
-    if(!user){
-      throw new Error("user is not found")
-    }else{
-      res.status(200).json({
-        message : "user found succesfully"
-      });
-    }
-  }catch(err){
-    res.status(400).json({
-      message : err.message
-    });
-  }
-});
-
-
-app.get("/feed",userAuth,async(req,res)=>{
-  try{
-    const user = await User.find({});
-    if(user.length === 0){
-      throw new Error("No data found")
-    }else{
-      res.status(200).json(user);
-    }
-  }catch(err){
-    res.status(400).json({
-      message : "something went wrong"
-    });
-  }
-});
-
-
-app.delete("/user",userAuth,async(req,res)=>{
-  const userId = req.body.userId;
-  try{
-    const users = await User.findById(userId);
-    await User.findByIdAndDelete(userId)
-    res.status(200).json({
-      message : "user deleted succesfully"
-    });
-
-  }catch(err){
-    res.status(400).json({
-      message : "something went wrong"
-    });
-  } 
-});
-
-
-app.patch("/user-data/:userID",userAuth,async(req,res)=>{
-  const userId = req.params?.userID;
-  const data = req.body; 
-  try{
-    
-    const cheackuser = await User.findById(userId);
-    if(!cheackuser){
-      res.status(404).json({
-        message : "user is not found"
-      });
-    }
-
-
-    const Allowed_update = ["Password","skill","Gender","about","age"]
-    const IsupdateAllowed = Object.keys(data).every((k)=>{
-      Allowed_update.includes(k)
-    })
-    if(!IsupdateAllowed){
-      throw new Error("Update Not Allowed")
-    };
-    
-    await User.findByIdAndUpdate(userId,data,{
-      returnDocument : "after",
-      runValidators : true
-    })
-
-    res.status(200).json({
-      message : "updated successfully"
-    }) 
-
-  }catch(err){
-    res.status(400).json({
-      message : "something went wrong"
-    })
-  }
-})
-
-
 
 
 connectDB()
