@@ -1,0 +1,35 @@
+const express = require("express")
+const profileRouter = express.Router()
+const { userAuth } = require("../middleware/auth.js")
+const { validator_update,validator_update_data } = require("../utils/validator.js")
+
+profileRouter.get("/profile/view",userAuth,async (req,res)=>{
+  try{
+    const user = req.user
+    res.status(200).json(user)
+  }catch(err){
+    res.status(400).json({
+      message : err.message
+    })
+  }
+})
+
+profileRouter.patch("/profile/edit",userAuth,async(req,res)=>{
+    try{
+        validator_update(req)
+        validator_update_data(req)
+        const logedinuser = req.user
+         
+        logedinuser.firstname = req.body.firstname
+        
+
+
+    }catch(err){
+        res.status(400).json({
+            message : err.message
+        })
+    }
+})
+
+
+module.exports = { profileRouter }

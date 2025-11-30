@@ -1,5 +1,7 @@
 const mogoose = require("mongoose")
 const validator = require("validator")
+const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt")
 
 const userSchema = new mogoose.Schema({
     firstNmae : {
@@ -35,10 +37,9 @@ const userSchema = new mogoose.Schema({
     },
     gender : {
         type : String,
-        validate(value){
-            if(!([male,female,other].includes(value))){
-                throw new Error("plz give correct email address")
-            }
+        enum : {
+            values : ["male","female","other"],
+            message : `{values} is not supported`
         }
     },
     about : {
