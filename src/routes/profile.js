@@ -20,8 +20,11 @@ profileRouter.patch("/profile/edit",userAuth,async(req,res)=>{
         validator_update_data(req)
         const logedinuser = req.user
          
-        logedinuser.firstname = req.body.firstname
-        
+        Object.keys(req.body).forEach(key => logedinuser[key] = req.body[key])
+        await logedinuser.save()
+        res.status(200).json({
+            message : "user data updated succesfully"
+        })
 
 
     }catch(err){
