@@ -25,7 +25,6 @@ authrouter.post("/singup",async (req,res) =>{
   }
 });
 
-
 authrouter.post("/login",async(req,res)=>{
   try{
     const {emailID,password} = req.body

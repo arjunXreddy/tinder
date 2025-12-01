@@ -36,4 +36,9 @@ const validator_update_data = (req) => {
     }
 }
 
+const password_update_validator = (req) => {
+
+
+}
+
 module.exports = {validator_singup,validator_update,validator_update_data}
