@@ -35,7 +35,22 @@ profileRouter.patch("/profile/edit",userAuth,async(req,res)=>{
 
 profileRouter.patch("/profile/password",userAuth,async(req,res)=>{
     try{
-        
+        const {password,newpassword} = req.body
+        const ispasswordvalid = await user.becriptpassword() 
+        if(!ispasswordvalid){
+           throw new Error("enter the correct password")
+        }
+
+        const loginuser = req.user
+        const Hashpassword = await bcrypt.hash(newpassword,10)
+        loginuser.password = Hashpassword
+        await loginuser.save()
+
+        res.status(200).json({
+            message : "password change succesfully"
+        })
+
+
     }catch(err){
         res.status(404).json({
             message : err.message
