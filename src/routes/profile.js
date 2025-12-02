@@ -2,6 +2,7 @@ const express = require("express")
 const profileRouter = express.Router()
 const { userAuth } = require("../middleware/auth.js")
 const { validator_update,validator_update_data } = require("../utils/validator.js")
+const User = require ("../model/user.model.js");
 
 profileRouter.get("/profile/view",userAuth,async (req,res)=>{
   try{

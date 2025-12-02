@@ -11,7 +11,9 @@ const userSchema = new mogoose.Schema({
         maxlength : 20
     },
     lastName : {
-        type : String, 
+        type : String,
+        mixlength : 4,
+        maxlength : 20
     },
     emailID : {
         type : String,
