@@ -32,7 +32,7 @@ authrouter.post("/login",async(req,res)=>{
     if(!user){
       throw new Error("not valie emailid")
     }
-    const ispasswordvalid = await user.becriptpassword() 
+    const ispasswordvalid = await user.becriptpassword(password) 
     if(!ispasswordvalid){
       throw new Error("enter the correct password")
     }
