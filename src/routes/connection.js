@@ -57,4 +57,20 @@ connectionRouter.get("/request/send/:status/:toUserID",userAuth,async(req,res)=>
 })
 
 
+
+connectionRouter.post("/request/review/:status/:toUserID",userAuth,async(req,res)=>{
+  try{
+    const loggedINUSer = req.user;
+    //akhsya => elon
+    //loggedin = touserid
+
+
+
+
+  }catch(err){
+
+  }
+})
+
+
 module.exports = { connectionRouter }

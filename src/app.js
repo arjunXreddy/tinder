@@ -30,11 +30,11 @@ app.use("/",profileRouter)
 
 connectDB()
 .then(()=>{
-  app.listen(PORT,() =>{
-    console.log(`server is sucssesfully listen to the port ${PORT}`);
-  });
+  app.listen(PORT,() =>
+    console.log(`server is sucssesfully listen to the port ${PORT}`)
+  )
 })
 .catch((err)=>{
-  console.error("error can not connected to DB!!!");
+  console.log("error can not connected to DB!!!")
 });
 
