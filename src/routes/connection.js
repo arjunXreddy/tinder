@@ -56,21 +56,46 @@ connectionRouter.get("/request/send/:status/:toUserID",userAuth,async(req,res)=>
   }
 })
 
+connectionRouter.post(
+  "/requests/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInUser = req.user;
+      const requestId = req.params.requestId;
+      const status = req.params.status;
 
+      // Akshay sending to Elon
+      // Logged in user is Elon Elon == toUserId
+      // Status should be interested then only I can accept or reject
+      // Validation on Status
+      // RequestID should be valid
+      const allowedStatus = ["accepted", "rejected"];
+      if (!allowedStatus.includes(status)) {
+        throw new Error("Invalid status");
+      }
 
-connectionRouter.post("/request/review/:status/:toUserID",userAuth,async(req,res)=>{
-  try{
-    const loggedINUSer = req.user;
-    //akhsya => elon
-    //loggedin = touserid
+      const checkRequestId = await ConnectionRequestModel.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+      if (!checkRequestId) {
+        throw new Error("Request ID is not found");
+      }
 
-
-
-
-  }catch(err){
-
+      checkRequestId.status = status;
+      const data = await checkRequestId.save();
+      res.status(200).json({
+        message: "Request status updated successfully",
+        data: data,
+      });
+    } catch (err) {
+      res.status(400).json({
+        message: err.message,
+      });
+    }
   }
-})
-
+);
 
 module.exports = { connectionRouter }
